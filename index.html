@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Iron Sport · Inventario</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Inter:wght@400;500;600;700&display=swap');
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg: #0a0a0a;
+      --surface: #111111;
+      --card: #161616;
+      --border: #242424;
+      --red: #e02020;
+      --red-dark: #b81818;
+      --blue: #1e6fff;
+      --blue-dim: #1558cc;
+      --white: #f5f5f5;
+      --muted: #5a5a5a;
+      --text: #e0e0e0;
+      --divider: #1e1e1e;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    header {
+      background: #0d0d0d;
+      border-bottom: 2px solid var(--red);
+      padding: 0 32px;
+      display: flex;
+      align-items: stretch;
+      justify-content: space-between;
+      height: 62px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .logo-wordmark {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 900;
+      font-size: 26px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--white);
+      line-height: 1;
+    }
+
+    .logo-wordmark span {
+      color: var(--red);
+    }
+
+    .logo-sub {
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    #fecha-hoy {
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: .04em;
+    }
+
+    #btn-reset {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+      transition: all .2s;
+    }
+
+    #btn-reset:hover {
+      border-color: var(--red);
+      color: var(--red);
+    }
+
+    /* ── Layout ── */
+    main {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 36px 24px 80px;
+    }
+
+    /* ── Resumen ── */
+    .summary-bar {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      margin-bottom: 44px;
+    }
+
+    .stat-card {
+      background: var(--surface);
+      padding: 24px 28px;
+    }
+
+    .stat-label {
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      margin-bottom: 10px;
+    }
+
+    .stat-value {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 38px;
+      font-weight: 700;
+      letter-spacing: -1px;
+      line-height: 1;
+      color: var(--white);
+    }
+
+    .stat-value.accent {
+      color: var(--blue);
+    }
+
+    /* ── Section titles ── */
+    .section-title {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      color: var(--muted);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* ── Products grid ── */
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+      gap: 14px;
+      margin-bottom: 48px;
+    }
+
+    /* ── Tarjeta ── */
+    .product-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: border-color .2s, transform .15s;
+    }
+
+    .product-card:hover {
+      border-color: #333;
+      transform: translateY(-1px);
+    }
+
+    .card-top {
+      padding: 22px 22px 16px;
+      border-bottom: 1px solid var(--divider);
+      flex: 1;
+    }
+
+    .product-row1 {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 14px;
+    }
+
+    .product-emoji {
+      font-size: 26px;
+      line-height: 1;
+    }
+
+    .price-badge {
+      background: rgba(30, 111, 255, 0.12);
+      border: 1px solid rgba(30, 111, 255, 0.25);
+      color: var(--blue);
+      border-radius: 6px;
+      padding: 4px 10px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .price-edit {
+      background: rgba(30, 111, 255, 0.08);
+      border: 1px solid rgba(30, 111, 255, 0.4);
+      color: var(--blue);
+      border-radius: 6px;
+      padding: 4px 10px;
+      font-size: 13px;
+      font-weight: 700;
+      width: 110px;
+      text-align: right;
+    }
+
+    .price-edit:focus {
+      outline: none;
+      border-color: var(--blue);
+    }
+
+    .price-edit::placeholder {
+      color: #3a5a8a;
+      font-weight: 400;
+    }
+
+    .product-name {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 2px;
+    }
+
+    .product-sub {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    /* Stock number — the hero of the card */
+    .stock-display {
+      margin: 18px 0 4px;
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+    }
+
+    .stock-num {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 64px;
+      font-weight: 900;
+      line-height: .9;
+      letter-spacing: -2px;
+      color: var(--white);
+      transition: color .2s;
+    }
+
+    .stock-num.low {
+      color: var(--red);
+    }
+
+    .stock-unit {
+      font-size: 12px;
+      color: var(--muted);
+      padding-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+
+    /* Init stock */
+    .init-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .init-label {
+      font-size: 12px;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .init-input {
+      flex: 1;
+      padding: 7px 10px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--white);
+      border-radius: 7px;
+      font-size: 14px;
+      font-weight: 600;
+      text-align: center;
+      max-width: 70px;
+    }
+
+    .init-input:focus {
+      outline: none;
+      border-color: var(--blue);
+    }
+
+    .btn-apply {
+      padding: 7px 14px;
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      border-radius: 7px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .15s;
+      white-space: nowrap;
+    }
+
+    .btn-apply:hover {
+      border-color: var(--blue);
+      color: var(--blue);
+    }
+
+    /* Sell button */
+    .btn-sell {
+      display: block;
+      width: 100%;
+      padding: 16px;
+      background: var(--red);
+      color: #fff;
+      border: none;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background .15s, transform .1s;
+    }
+
+    .btn-sell:hover {
+      background: var(--red-dark);
+    }
+
+    .btn-sell:active {
+      transform: scale(0.98);
+    }
+
+    .btn-sell:disabled {
+      background: var(--border);
+      color: var(--muted);
+      cursor: not-allowed;
+      letter-spacing: .5px;
+      font-size: 13px;
+      font-family: 'Inter', sans-serif;
+      font-weight: 500;
+      text-transform: none;
+    }
+
+    /* ── Log ── */
+    .log-table {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    .log-header {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr auto;
+      padding: 12px 20px;
+      border-bottom: 1px solid var(--border);
+      background: var(--card);
+    }
+
+    .log-col {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .log-col.right {
+      text-align: right;
+    }
+
+    .log-empty {
+      padding: 40px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .log-item {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr auto;
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--divider);
+      align-items: center;
+      animation: slideIn .2s ease;
+    }
+
+    .log-item:last-child {
+      border-bottom: none;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateX(-6px);
+      }
+
+      to {
+        opacity: 1;
+        transform: none;
+      }
+    }
+
+    .log-product {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--white);
+    }
+
+    .log-time {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .log-stock {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .log-amount {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--blue);
+      text-align: right;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 640px) {
+      .summary-bar {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .summary-bar .stat-card:last-child {
+        grid-column: 1 / -1;
+      }
+
+      header {
+        padding: 0 16px;
+      }
+
+      main {
+        padding: 24px 14px 60px;
+      }
+
+      .log-header,
+      .log-item {
+        grid-template-columns: 1fr auto;
+      }
+
+      .log-time,
+      .log-stock {
+        display: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <div class="logo">
+      <div>
+        <div class="logo-wordmark">Iron <span>Sport</span></div>
+        <div class="logo-sub">Control de inventario</div>
+      </div>
+    </div>
+    <div class="header-right">
+      <span id="fecha-hoy"></span>
+      <button id="btn-reset" onclick="resetDay()">↺ Nuevo día</button>
+    </div>
+  </header>
+
+  <main>
+
+    <div class="summary-bar">
+      <div class="stat-card">
+        <div class="stat-label">Transacciones hoy</div>
+        <div class="stat-value" id="total-ventas">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Unidades vendidas</div>
+        <div class="stat-value" id="total-unidades">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Ganancia del día</div>
+        <div class="stat-value accent" id="total-ganancia">$0</div>
+      </div>
+    </div>
+
+    <div class="section-title">Productos</div>
+    <div class="products-grid" id="products-grid"></div>
+
+    <div class="section-title">Registro de ventas</div>
+    <div class="log-table">
+      <div class="log-header">
+        <div class="log-col">Producto</div>
+        <div class="log-col">Hora</div>
+        <div class="log-col">Stock restante</div>
+        <div class="log-col right">Valor</div>
+      </div>
+      <div id="log-body">
+        <div class="log-empty">Aún no hay ventas registradas hoy.</div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    const DEFAULT_PRODUCTS = [
+      { id: 'agua-p', emoji: '💧', name: 'Agua pequeña', price: 2500, stock: 0, initialStock: 0 },
+      { id: 'agua-g', emoji: '🌊', name: 'Agua grande', price: 3500, stock: 0, initialStock: 0 },
+      { id: 'yogurt', emoji: '🥛', name: 'Yogurt griego', price: 5000, stock: 0, initialStock: 0 },
+      { id: 'gettore', emoji: '🧃', name: 'Gatorade', price: 6000, stock: 0, initialStock: 0 },
+      { id: 'speedmax', emoji: '⚡', name: 'Speedmax', price: 2500, stock: 0, initialStock: 0 },
+    ];
+
+    let products = loadProducts();
+    let sales = loadSales();
+
+    function loadProducts() {
+      const s = localStorage.getItem('ironsport_products');
+      if (!s) return JSON.parse(JSON.stringify(DEFAULT_PRODUCTS));
+      const saved = JSON.parse(s);
+      const ag = saved.find(x => x.id === 'agua-g');
+      if (ag && !ag.price) ag.price = 3500;
+      if (!saved.find(x => x.id === 'speedmax'))
+        saved.push({ id: 'speedmax', emoji: '⚡', name: 'Speedmax', price: 2500, stock: 0, initialStock: 0 });
+      return saved;
+    }
+    function saveProducts() { localStorage.setItem('ironsport_products', JSON.stringify(products)); }
+
+    function loadSales() {
+      const s = localStorage.getItem('ironsport_sales');
+      return s ? JSON.parse(s) : [];
+    }
+    function saveSales() { localStorage.setItem('ironsport_sales', JSON.stringify(sales)); }
+
+    // ── Render ──
+    function render() {
+      renderDate();
+      renderProducts();
+      renderSummary();
+      renderLog();
+    }
+
+    function renderDate() {
+      document.getElementById('fecha-hoy').textContent =
+        new Date().toLocaleDateString('es-CO', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+    }
+
+    function renderProducts() {
+      const grid = document.getElementById('products-grid');
+      grid.innerHTML = '';
+
+      products.forEach(p => {
+        const low = p.stock > 0 && p.stock <= 3;
+        const noPrice = p.price === null;
+
+        const card = document.createElement('div');
+        card.className = 'product-card';
+
+        const priceField = noPrice
+          ? `<input class="price-edit" type="number" placeholder="Escribe el precio"
+             onchange="updatePrice('${p.id}', this.value)" />`
+          : `<span class="price-badge">$${p.price.toLocaleString('es-CO')}</span>`;
+
+        const btnLabel = noPrice
+          ? 'Define el precio primero'
+          : p.stock === 0
+            ? 'Sin stock'
+            : `VENDER · $${p.price.toLocaleString('es-CO')}`;
+
+        card.innerHTML = `
+        <div class="card-top">
+          <div class="product-row1">
+            <span class="product-emoji">${p.emoji}</span>
+            ${priceField}
+          </div>
+          <div class="product-name">${p.name}</div>
+          <div class="product-sub">Stock inicial: ${p.initialStock} ud.</div>
+
+          <div class="stock-display">
+            <div class="stock-num ${low ? 'low' : ''}">${p.stock}</div>
+            <div class="stock-unit">en stock</div>
+          </div>
+
+          <div class="init-row">
+            <span class="init-label">Inicio del día:</span>
+            <input class="init-input" type="number" min="0" placeholder="0"
+              value="${p.initialStock || ''}"
+              onchange="setPending('${p.id}', this.value)" />
+            <button class="btn-apply" onclick="applyInitialStock('${p.id}')">Aplicar</button>
+          </div>
+        </div>
+
+        <button class="btn-sell"
+          onclick="sell('${p.id}')"
+          ${p.stock === 0 || noPrice ? 'disabled' : ''}>
+          ${btnLabel}
+        </button>
+      `;
+        grid.appendChild(card);
+      });
+    }
+
+    function renderSummary() {
+      document.getElementById('total-ventas').textContent = sales.length;
+      document.getElementById('total-unidades').textContent = sales.length;
+      const ganancia = sales.reduce((s, v) => s + v.price, 0);
+      document.getElementById('total-ganancia').textContent =
+        '$' + ganancia.toLocaleString('es-CO');
+    }
+
+    function renderLog() {
+      const body = document.getElementById('log-body');
+      if (sales.length === 0) {
+        body.innerHTML = '<div class="log-empty">Aún no hay ventas registradas hoy.</div>';
+        return;
+      }
+      body.innerHTML = [...sales].reverse().map(s => `
+      <div class="log-item">
+        <div class="log-product">${s.emoji} ${s.name}</div>
+        <div class="log-time">${s.time}</div>
+        <div class="log-stock">${s.stockAfter} ud.</div>
+        <div class="log-amount">+$${s.price.toLocaleString('es-CO')}</div>
+      </div>
+    `).join('');
+    }
+
+    // ── Acciones ──
+    function sell(id) {
+      const p = products.find(x => x.id === id);
+      if (!p || p.stock === 0 || !p.price) return;
+      p.stock--;
+      const now = new Date();
+      sales.push({
+        id: p.id, name: p.name, emoji: p.emoji,
+        price: p.price,
+        stockAfter: p.stock,
+        time: now.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' })
+      });
+      saveProducts();
+      saveSales();
+      render();
+    }
+
+    function setPending(id, val) {
+      const p = products.find(x => x.id === id);
+      if (p) p._pending = parseInt(val) || 0;
+    }
+
+    function applyInitialStock(id) {
+      const p = products.find(x => x.id === id);
+      if (!p) return;
+      const val = p._pending ?? p.initialStock;
+      p.initialStock = val;
+      p.stock = val;
+      saveProducts();
+      render();
+    }
+
+    function updatePrice(id, val) {
+      const p = products.find(x => x.id === id);
+      if (!p) return;
+      p.price = parseFloat(val) || null;
+      saveProducts();
+      render();
+    }
+
+    function resetDay() {
+      if (!confirm('¿Iniciar un nuevo día? Se borrará el registro de ventas de hoy.')) return;
+      sales = [];
+      products.forEach(p => { p.stock = 0; p.initialStock = 0; });
+      saveSales();
+      saveProducts();
+      render();
+    }
+
+    render();
+  </script>
+</body>
+
+</html>
